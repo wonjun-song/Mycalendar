@@ -37,7 +37,8 @@
 				android:layout_weight="1"
 				android:gravity="center"
 				android:background="@drawable/text_week_line"
-	            android:text="@string/text_su" />
+	            android:text="@string/text_su"
+	            android:textColor="#ff0000" />
 			<TextView
 				android:id="@+id/header_mo_text"
 				android:layout_width="0dp"
@@ -85,7 +86,8 @@
 				android:layout_weight="1"
 				android:gravity="center"
 				android:background="@drawable/text_week_line"
-	            android:text="@string/text_sa" />
+	            android:text="@string/text_sa"
+	            android:textColor="#0000ff" />
 		</LinearLayout>
 	</LinearLayout>
 	
@@ -597,37 +599,53 @@
     	android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:background="@drawable/text_month_line"
-	    android:orientation="horizontal" >
+	    android:orientation="horizontal"
+	    android:padding="5dp" >
 
 		<Button
 		    android:id="@+id/previous_month_button"
 		    style="android:attr/buttonStyleSmall"
+            android:layout_marginLeft="2dp"
+		    android:layout_marginRight="2dp"
 		    android:layout_width="0dp"
 		    android:layout_height="wrap_content"
 		    android:layout_weight="1"
-		    android:gravity="center"
-		    android:onClick="goPreviousMonth"
-		    android:text="@string/previous_month_button" />
+		    android:gravity="bottom|center"
+		    android:text="@string/previous_month_button"
+		    android:textSize="12sp"
+		    android:drawableTop="@android:drawable/ic_media_previous"
+		    android:background="@drawable/custom_button"
+		    android:onClick="goPreviousMonth" />
 
 		<Button
 		    android:id="@+id/current_month_button"
 		    style="android:attr/buttonStyleSmall"
+		    android:layout_marginLeft="2dp"
+		    android:layout_marginRight="2dp"
 		    android:layout_width="0dp"
 		    android:layout_height="wrap_content"
 		    android:layout_weight="1"
-		    android:gravity="center"
-		    android:onClick="goCurrentMonth"
-		    android:text="@string/current_month_button" />
+		    android:gravity="bottom|center"
+		    android:text="@string/current_month_button"
+		    android:textSize="12sp"
+		    android:drawableTop="@android:drawable/ic_menu_today"
+		    android:background="@drawable/custom_button"
+		    android:onClick="goCurrentMonth" />
 
 		<Button
 		    android:id="@+id/next_month_id"
 		    style="android:attr/buttonStyleSmall"
+		    android:layout_marginLeft="2dp"
+		    android:layout_marginRight="2dp"
 		    android:layout_width="0dp"
 		    android:layout_height="wrap_content"
 		    android:layout_weight="1"
-		    android:gravity="center"
-		    android:onClick="goNextMonth"
-		    android:text="@string/next_month_button" />
+		    android:gravity="bottom|center"
+		    android:text="@string/next_month_button"
+		    android:textSize="12sp"
+		    android:drawableTop="@android:drawable/ic_media_next"
+		    android:background="@drawable/custom_button"
+		    android:onClick="goNextMonth" />
 
 	</LinearLayout>
 </LinearLayout>

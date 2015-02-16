@@ -180,6 +180,7 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 			tg.setDayNum(0);
 			tg.setSelected(false);
 			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setText(tg.getDispString());
+			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_middle)).setText("");
 			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text2)).setText("");
 		}
 		

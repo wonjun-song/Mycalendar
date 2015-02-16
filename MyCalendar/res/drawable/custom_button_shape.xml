@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ボタンタップ時 定義 -->
+    <item android:state_pressed="true">
+        <shape
+            android:shape="rectangle">
+            <stroke
+                android:width="1px"
+                android:color="@color/black" />
+            <gradient 
+                android:startColor="@color/LightGrey"
+                android:endColor="@color/DimGrey"
+                android:angle="90"/>
+            <corners 
+                android:radius="7dp"/>
+        </shape>
+    </item>
+
+    <!-- ボタン通常表示時 定義 -->
+    <item android:state_pressed="false">
+        <shape
+            android:shape="rectangle">
+            <stroke
+                android:width="1px"
+                android:color="@color/black" />
+            <gradient 
+                android:startColor="@color/Gainsboro"
+                android:endColor="@color/Grey"
+                android:angle="90"/>
+            <corners 
+                android:radius="7dp"/>
+        </shape>
+    </item>
+</selector>
