@@ -13,6 +13,7 @@
  <color name="grey">#808080</color>
  <color name="Grey">#808080</color>
  <color name="DimGrey">#696969</color>
+ <color name="DarkerGrey">#3F3F3F</color>
  <color name="LightSlateGrey">#778899</color>
  <color name="SlateGrey">#708090</color>
  <color name="DarkSlateGrey">#2F4F4F</color>

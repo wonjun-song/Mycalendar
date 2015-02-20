@@ -6,7 +6,7 @@
     <string name="header_month_button">this month</string>
     <string name="previous_month_button">Prev</string>
     <string name="current_month_button">Today</string>
-    <string name="next_month_button">Next</string>
+    <string name="next_month_button">nNxt</string>
     <string name="saperator">.</string>
     <string name="text_su">Sun</string>
     <string name="text_mo">Mon</string>
