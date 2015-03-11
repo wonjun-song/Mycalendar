@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list 
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/abc_menu_dropdown_panel_holo_light"
+        android:top="-5dp"
+        android:bottom="-1dp"
+        android:left="-2dp"
+        android:right="-2dp"/>
+    <item
+        android:drawable="@drawable/custom_button_shape"
+        android:top="-5dp"
+        android:bottom="-2dp"
+        android:left="-2dp"
+        android:right="-2dp"/>
+    <item 
+        android:drawable="@android:drawable/ic_media_next"
+        android:left="35dp"
+        android:right="35dp"/>
+</layer-list>

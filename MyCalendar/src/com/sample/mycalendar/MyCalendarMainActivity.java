@@ -1,5 +1,6 @@
 package com.sample.mycalendar;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
@@ -14,18 +15,21 @@ import android.widget.TextView;
 
 public class MyCalendarMainActivity extends ActionBarActivity {
 
-	private static final String HOLYDAY = "1";			//1:休日
+	private static final String HOLYDAY = "1";			// 1:休日
 	
-	private TextView headerMonthText = null;			//年月表示テキストビュー
+	private TextView headerMonthText = null;			// 年月表示テキストビュー
+	
+	private Calendar cal;								// カレンダー
 			
-	private int currentYear = 0;						//現在年
-	private int currentMonth = 0;						//現在月
+	private int currentYear = 0;						// 表示年
+	private int currentMonth = 0;						// 表示月
+	private int currentDate = 0;						// 表示日
 	
-	private int nowYear = 0;							//表示中の年
-	private int nowMonth = 0;							//表示中の月
-	private int nowDay = 0;								//表示中の日
+	private int nowYear = 0;							// 現在年
+	private int nowMonth = 0;							// 現在月
+	private int nowDate = 0;							// 現在日
 	
-	//日付用テキストビューリスト
+	// 日付用テキストビューリスト
 	private ArrayList<DayTextViewInfo> dayTextList = new ArrayList<DayTextViewInfo>();
 
 	/**
@@ -132,172 +136,164 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 		info = new DayTextViewInfo(R.id.six_sa_text);
 		this.dayTextList.add(info);
 		
-	    Calendar cal = Calendar.getInstance();
-	    this.currentYear = cal.get(Calendar.YEAR);			//現在年取得
-	    this.currentMonth = cal.get(Calendar.MONTH) + 1;	//現在月取得
-	    
-	    this.nowYear = this.currentYear;
-	    this.nowMonth = this.currentMonth;
-	    this.nowDay = cal.get(Calendar.DATE);				//表示日（現在日）取得
-	    
-		int id = 0;
-		for(int i = 0; i < 6; i++) {
-			for(int j = 0; j < 7 ; j++){
-				CustomCalendarView tv = (CustomCalendarView)findViewById(this.dayTextList.get(id).getTextViewId());
-				tv.setBackgroundResource(R.drawable.text_day_line);
-				this.dayTextList.get(id).setCustomObject(tv);
-				id++;
-			}
-		}
-		
-		this.setCalendar(0);
+		cal = Calendar.getInstance();
+	    currentYear = cal.get(Calendar.YEAR);				// 表示年
+	    currentMonth = cal.get(Calendar.MONTH) + 1;			// 表示月
+	    currentDate = cal.get(Calendar.DATE);				// 表示日
+	    nowYear = currentYear;								// 現在年
+	    nowMonth = currentMonth;							// 現在月
+	    nowDate = currentDate;								// 現在日	    
+	    setCalendar(0);
 	}
 
 	/**
 	 * カレンダー設定
 	 */
 	private void setCalendar(int offset) {
-		this.currentMonth += offset;
 		
-		if(currentMonth > 12) {
-			this.currentYear += 1;
-			this.currentMonth = 1;
+	    // 表示月を計算
+		currentMonth += offset;
+		
+		if (currentMonth > 12) {
+			currentYear += 1;
+			currentMonth = 1;
+		} else if (currentMonth == 0) {
+			currentYear -= 1;
+			currentMonth = 12;
 		}
-		else if(currentMonth == 0) {
-			this.currentMonth = 12;
-			this.currentYear -= 1;
-		}
+		
+		// 表示カレンダー設定
+		cal.clear();
+		cal.set(currentYear, currentMonth - 1, 1);
+		
+		currentYear = cal.get(Calendar.YEAR);				// 表示年
+	    currentMonth = cal.get(Calendar.MONTH) + 1;			// 表示月
+	    currentDate = cal.get(Calendar.DATE);				// 表示日
 	    
-		//日付ビュー初期化
-		for(int i = 0 ; i < this.dayTextList.size(); i++) {
-			DayTextViewInfo tg = this.dayTextList.get(i);
-			
-			if(tg.isNowDay() || tg.isSelected() ) {
-				tg.getCustomObject().setBackgroundResource(R.drawable.text_day_line);
-			}
-			
-			tg.setNowDay(false);
-			tg.setDayNum(0);
-			tg.setSelected(false);
-			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setText(tg.getDispString());
-			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text2)).setText("");
-		}
+		// カレンダーの開始曜日を取得
+		int dayOffset = 0;
 		
-		//カレンダー情報生成
-		CalendarInfo cl = new CalendarInfo(currentYear, currentMonth);
+	    // 月の初日の曜日を取得
+		int startDay = cal.get(Calendar.DAY_OF_WEEK);
 		
-		//休日検索
+		// カレンダーの表示開始日を設定
+		startDay = (startDay + dayOffset - 1) % 7;
+		cal.add(Calendar.DATE, - startDay);
+		
+		// 休日検索
 		CalendarDao dao  = new CalendarDao(this);
 		
 		String[] condition = new String[] {
-			String.valueOf(this.currentYear), 
-			String.valueOf(this.currentMonth), 
+			String.valueOf(currentYear), 
+			String.valueOf(currentMonth), 
 			getString(R.string.country)
 		};
 		
 		Map<String, CalendarForm> holidays = dao.getHoliDay(condition);
 		
-		String calYmd = "";		//年月日
-		int yearNum = 0;		//年
-		int monthNum = 0;		//月
-		int dayNum = 0;			//日
+		String ymd = "";		// 年月日
+		int year = 0;			// 年
+		int month = 0;			// 月
+		int date = 0;			// 日
+		int col = 0;			// 曜日
 		
-		int row = 0;
-		int col = 0;
+		// 日付フォーマッター取得
+		SimpleDateFormat formYmd = new SimpleDateFormat("yyyy/MM/dd");
 		
-		for(int i = 0 ; i < this.dayTextList.size(); i++) {
-			DayTextViewInfo tg = this.dayTextList.get(i);
+		for (int i = 0 ; i < this.dayTextList.size(); i++) {
 			
-			//初期化
-			calYmd =  "";
-			yearNum = 0;
-			monthNum = 0;
-			dayNum = 0;
+			// カレンダービュー取得
+			DayTextViewInfo vi = this.dayTextList.get(i);
+			CustomCalendarView ccv = (CustomCalendarView)findViewById(vi.getTextViewId());
 			
-			//カレンダー配列の年月日を変数に設定
-			if (cl.getCalendarMatrix()[row][col] != null
-				&& cl.getCalendarMatrix()[row][col].length() == 8) {
-				calYmd = cl.getCalendarMatrix()[row][col];
-				yearNum = Integer.parseInt(calYmd.substring(0, 4));
-				monthNum = Integer.parseInt(calYmd.substring(4, 6));
-				dayNum = Integer.parseInt(calYmd.substring(6, 8));
+			// textview取得
+			TextView text1 = (TextView)ccv.findViewById(R.id.text1);
+			TextView text2 = (TextView)ccv.findViewById(R.id.text2);
+			
+			// 表示年月日取得
+			ymd = formYmd.format(cal.getTime());
+			year = cal.get(Calendar.YEAR);
+			month = cal.get(Calendar.MONTH) + 1;
+			date = cal.get(Calendar.DATE);
+			
+			// 日付ビュー初期化
+			ccv.setBackgroundResource(R.drawable.text_day_line);
+			vi.setNowDay(false);
+			vi.setSelected(false);
+			text1.setText(String.valueOf(date));
+			
+			// 表示年月日 = 現在年月日
+			if (year == nowYear && month == nowMonth && date == nowDate) {
+				
+				// フラグ変更、テキストビュースタイル変更
+				ccv.setBackgroundResource(R.drawable.text_now_line);
+				vi.setNowDay(true);
 			}
 			
-			//表示年月 = 現在年月
-			if(this.nowYear == this.currentYear 
-				&& this.nowMonth == this.currentMonth 
-				&& this.nowDay == dayNum) {
-				//フラグ変更、テキストビュースタイル変更
-				tg.setNowDay(true);
-				((CustomCalendarView)findViewById(tg.getTextViewId())).setBackgroundResource(R.drawable.text_now_line);
-			}
-			
-			//現在年月の場合
-			if (yearNum == this.currentYear && monthNum == this.currentMonth) {
-				//日曜日は赤文字
-				if(col == 0) {
-					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.RED);
-				//土曜日は青文字
-				} else if(col == 6) {
-					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.BLUE);
-				//その他は黒文字
+			// 現在年月の場合
+			if (year == currentYear && month == currentMonth) {
+				
+				// 日曜日は赤文字
+				if (col == ((0 + dayOffset) % 7)) {
+					text1.setTextColor(Color.RED);
+				
+				// 土曜日は青文字
+				} else if (col == ((6 + dayOffset) % 7)) {
+					text1.setTextColor(Color.BLUE);
+				
+				// その他は黒文字
 				} else {
-					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.BLACK);
+					text1.setTextColor(Color.BLACK);
 				}
-			//前月・来月の月跨ぎはグレー文字					
+			
+			// 前月・来月の月跨ぎはグレー文字					
 			} else {
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.GRAY);
+				text1.setTextColor(Color.GRAY);
 			}
 			
-			//休日は赤文字
-			if (holidays.containsKey(calYmd)
-				&& holidays.get(calYmd).getHoliday().equals(HOLYDAY)) {
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.RED);
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text2)).setTextColor(Color.RED);
+			// 休日は赤文字
+			if (holidays.containsKey(ymd)
+				&& holidays.get(ymd).getHoliday().equals(HOLYDAY)) {
+				
+				// 休日は赤文字
+				text1.setTextColor(Color.RED);
+				text2.setTextColor(Color.RED);
+				
+				// 休日のタイトルを設定
+				text2.setText((holidays.get(ymd)).getTitle());
 			}
 			
-			//テキストビューに日付を設定
-			if (dayNum != 0) { 
-				tg.setDayNum(dayNum);
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setText(tg.getDispString());
-			}
-			
-			//休日のタイトルを設定
-			if (holidays.containsKey(calYmd)) {
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text2)).setText((holidays.get(calYmd)).getTitle());
-			}
-			
-			//次の曜日
+			// 次の曜日
 			col += 1;
 			
-			//次の週、日曜日からスタート
+			// 次の週、日曜日からスタート
 			if (col == 7) {
-				row += 1;
 				col = 0;
 			}
+			
+			// 次の日
+			cal.add(Calendar.DATE, 1);
 		}
 		
-		//表示年月設定
-		this.headerMonthText.setText(String.valueOf(this.currentYear) 
-				+ getString(R.string.saperator) + String.valueOf(this.currentMonth));	    
+		// 表示年月設定
+		this.headerMonthText.setText(String.valueOf(currentYear) 
+				+ getString(R.string.saperator) + String.valueOf(currentMonth));	    
 	}
-
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_calendar_main);
         initializeControl();
-        
     }
-
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.my_calendar_main, menu);
         return true;
     }
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -309,21 +305,21 @@ public class MyCalendarMainActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+    
     public void selectDay(View view) {
-		for(int i = 0 ; i < this.dayTextList.size(); i++) {
-			if(this.dayTextList.get(i).getTextViewId() == view.getId()) {
-				((CustomCalendarView)findViewById(this.dayTextList.get(i).getTextViewId())).setBackgroundResource(R.drawable.text_selected_line);
-				this.dayTextList.get(i).setSelected(true);
-			}
-			else {
-				if(this.dayTextList.get(i).isNowDay() == true) {
-					((CustomCalendarView)findViewById(this.dayTextList.get(i).getTextViewId())).setBackgroundResource(R.drawable.text_now_line);
-					this.dayTextList.get(i).setSelected(false);
+		for (int i = 0 ; i < dayTextList.size(); i++) {
+			CustomCalendarView ccv = (CustomCalendarView)findViewById(dayTextList.get(i).getTextViewId());
+			if (dayTextList.get(i).getTextViewId() == view.getId()) {
+				ccv.setBackgroundResource(R.drawable.text_selected_line);
+				dayTextList.get(i).setSelected(true);
+			} else {
+				if (dayTextList.get(i).isNowDay() == true) {
+					ccv.setBackgroundResource(R.drawable.text_now_line);
+					dayTextList.get(i).setSelected(false);
 				}
-				else if(this.dayTextList.get(i).isSelected()) {
-					((CustomCalendarView)findViewById(this.dayTextList.get(i).getTextViewId())).setBackgroundResource(R.drawable.text_day_line);
-					this.dayTextList.get(i).setSelected(false);
+				else if (dayTextList.get(i).isSelected()) {
+					ccv.setBackgroundResource(R.drawable.text_day_line);
+					dayTextList.get(i).setSelected(false);
 				}
 			}
 		}
@@ -334,8 +330,8 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 	}
 	
 	public void goCurrentMonth(View view) {
-		this.currentYear = this.nowYear;
-		this.currentMonth = this.nowMonth;
+		currentYear = nowYear;
+		currentMonth = nowMonth;
 		setCalendar(0);
 	}
 	

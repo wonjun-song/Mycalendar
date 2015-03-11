@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="CustomCalendarView">
         <attr name="dayText" format="string"/>
+        <attr name="middleText" format="string"/>
         <attr name="titleText" format="string"/>
     </declare-styleable>
 </resources>

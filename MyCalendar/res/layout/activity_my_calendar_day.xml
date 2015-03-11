@@ -1,0 +1,86 @@
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res/com.sample.mycalendar"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical" >
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:background="@drawable/abc_menu_dropdown_panel_holo_light" >
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@drawable/text_month_line"
+			android:orientation="horizontal" >
+			<TextView
+				android:id="@+id/header_day_text"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2"
+				android:gravity="center"
+				android:text="@string/header_month_button"
+				android:textSize="20sp"
+				android:textColor="@color/white" />
+	    </LinearLayout>
+		<LinearLayout 
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal" >        
+			<TextView
+				android:id="@+id/header_holiday_text"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2"
+				android:gravity="center"
+				android:textSize="16sp" />
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="7"
+		android:orientation="vertical" >
+		<ListView 
+			android:id="@+id/dayListView"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" 
+			android:layout_weight="1"/>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@drawable/abc_menu_dropdown_panel_holo_light"
+		android:orientation="vertical" >
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@drawable/text_month_line"
+			android:orientation="horizontal"
+			android:padding="5dp" >
+			<Button
+				android:id="@+id/previous_month_button"
+				style="android:attr/buttonStyleSmall"
+				android:layout_marginLeft="2dp"
+				android:layout_marginRight="2dp"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="bottom|center"
+				android:background="@drawable/custom_button_prev"
+				android:onClick="goMonthCalendar" />
+			<Button
+				android:id="@+id/current_month_button"
+				style="android:attr/buttonStyleSmall"
+				android:layout_marginLeft="2dp"
+				android:layout_marginRight="2dp"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:gravity="bottom|center"
+				android:background="@drawable/custom_button_today"
+				android:onClick="goEdit" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>
