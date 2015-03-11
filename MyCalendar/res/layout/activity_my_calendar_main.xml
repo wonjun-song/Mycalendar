@@ -8,7 +8,8 @@
 	<LinearLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:orientation="vertical" >
+	    android:orientation="vertical"
+	    android:background="@drawable/abc_menu_dropdown_panel_holo_light" >
 	    
 		<LinearLayout
 		    android:layout_width="match_parent"
@@ -23,7 +24,8 @@
 	       	    android:layout_weight="2"
 	       	    android:gravity="center"
 	       	    android:text="@string/header_month_button"
-	       	    android:textSize="20sp" />
+	       	    android:textSize="20sp"
+	       	    android:textColor="@color/white" />
 		
 	    </LinearLayout>
 		<LinearLayout 
@@ -37,7 +39,8 @@
 				android:layout_weight="1"
 				android:gravity="center"
 				android:background="@drawable/text_week_line"
-	            android:text="@string/text_su" />
+	            android:text="@string/text_su"
+	            android:textColor="#ff0000" />
 			<TextView
 				android:id="@+id/header_mo_text"
 				android:layout_width="0dp"
@@ -85,7 +88,8 @@
 				android:layout_weight="1"
 				android:gravity="center"
 				android:background="@drawable/text_week_line"
-	            android:text="@string/text_sa" />
+	            android:text="@string/text_sa"
+	            android:textColor="#0000ff" />
 		</LinearLayout>
 	</LinearLayout>
 	
@@ -93,7 +97,7 @@
     	android:layout_width="match_parent"
     	android:layout_height="0dp"
     	android:layout_weight="7"
-    	android:orientation="vertical">
+    	android:orientation="vertical" >
 		
 		<LinearLayout 
 			android:layout_width="match_parent"
@@ -596,38 +600,49 @@
 	<LinearLayout
     	android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:background="@drawable/text_month_line"
-	    android:orientation="horizontal" >
-
-		<Button
-		    android:id="@+id/previous_month_button"
-		    style="android:attr/buttonStyleSmall"
-		    android:layout_width="0dp"
+	    android:background="@drawable/abc_menu_dropdown_panel_holo_light"
+	    android:orientation="vertical" >
+        <LinearLayout
+    	    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:layout_weight="1"
-		    android:gravity="center"
-		    android:onClick="goPreviousMonth"
-		    android:text="@string/previous_month_button" />
-
-		<Button
-		    android:id="@+id/current_month_button"
-		    style="android:attr/buttonStyleSmall"
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:layout_weight="1"
-		    android:gravity="center"
-		    android:onClick="goCurrentMonth"
-		    android:text="@string/current_month_button" />
-
-		<Button
-		    android:id="@+id/next_month_id"
-		    style="android:attr/buttonStyleSmall"
-		    android:layout_width="0dp"
-		    android:layout_height="wrap_content"
-		    android:layout_weight="1"
-		    android:gravity="center"
-		    android:onClick="goNextMonth"
-		    android:text="@string/next_month_button" />
-
+		    android:background="@drawable/text_month_line"
+		    android:orientation="horizontal"
+		    android:padding="5dp" >
+			<Button
+			    android:id="@+id/previous_month_button"
+			    style="android:attr/buttonStyleSmall"
+	            android:layout_marginLeft="2dp"
+			    android:layout_marginRight="2dp"
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1"
+			    android:gravity="bottom|center"
+			    android:background="@drawable/custom_button_prev"
+			    android:onClick="goPreviousMonth" />
+	
+			<Button
+			    android:id="@+id/current_month_button"
+			    style="android:attr/buttonStyleSmall"
+			    android:layout_marginLeft="2dp"
+			    android:layout_marginRight="2dp"
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1"
+			    android:gravity="bottom|center"
+			    android:background="@drawable/custom_button_today"
+			    android:onClick="goCurrentMonth" />
+	
+			<Button
+			    android:id="@+id/next_month_id"
+			    style="android:attr/buttonStyleSmall"
+			    android:layout_marginLeft="2dp"
+			    android:layout_marginRight="2dp"
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1"
+			    android:gravity="bottom|center"
+			    android:background="@drawable/custom_button_next"
+			    android:onClick="goNextMonth" />
+		</LinearLayout>
 	</LinearLayout>
 </LinearLayout>
