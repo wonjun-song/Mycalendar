@@ -7,7 +7,7 @@ public class DayTextViewInfo {
 	private CustomCalendarView customObject =null;	//カスタムビューオブジェクト
 	private int dayNum;						//日付
 	private String title;					//タイトル
-	private boolean isNowDay = false;		//現在日付フラグ
+	private boolean isToDay = false;		//現在日付フラグ
 	private boolean isSelected = false;		//日付選択フラグ
 	
 	/**
@@ -74,18 +74,18 @@ public class DayTextViewInfo {
 	}
 
 	/**
-	 * isNowDay 現在日付フラグを返す
-	 * @return isNowDay
+	 * isToDay 現在日付フラグを返す
+	 * @return isToDay
 	 */
-	public boolean isNowDay() {
-		return isNowDay;
+	public boolean isToDay() {
+		return isToDay;
 	}
 
 	/**
-	 * @param isNowDay 現在日付を設定
+	 * @param isToDay 現在日付を設定
 	 */
-	public void setNowDay(boolean isNowDay) {
-		this.isNowDay = isNowDay;
+	public void setToDay(boolean isToDay) {
+		this.isToDay = isToDay;
 	}
 	
 	/**

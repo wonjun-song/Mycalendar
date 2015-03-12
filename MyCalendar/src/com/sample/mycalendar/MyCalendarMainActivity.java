@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -14,13 +15,12 @@ import android.widget.TextView;
 
 public class MyCalendarMainActivity extends ActionBarActivity {
 
-	private static final String HOLYDAY = "1";			//1:休日
+	public final static String EXTRA_MESSAGE = "com.sample.myCalendar.MESSAGE";
 	
+	private static final String HOLYDAY = "1";			//1:休日
 	private TextView headerMonthText = null;			//年月表示テキストビュー
-			
 	private int currentYear = 0;						//現在年
 	private int currentMonth = 0;						//現在月
-	
 	private int nowYear = 0;							//表示中の年
 	private int nowMonth = 0;							//表示中の月
 	private int nowDay = 0;								//表示中の日
@@ -172,16 +172,16 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 		for(int i = 0 ; i < this.dayTextList.size(); i++) {
 			DayTextViewInfo tg = this.dayTextList.get(i);
 			
-			if(tg.isNowDay() || tg.isSelected() ) {
+			if(tg.isToDay() || tg.isSelected() ) {
 				tg.getCustomObject().setBackgroundResource(R.drawable.text_day_line);
 			}
 			
-			tg.setNowDay(false);
+			tg.setToDay(false);
 			tg.setDayNum(0);
 			tg.setSelected(false);
-			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setText(tg.getDispString());
+			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_day)).setText(tg.getDispString());
 			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_middle)).setText("");
-			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text2)).setText("");
+			((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_title)).setText("");
 		}
 		
 		//カレンダー情報生成
@@ -229,7 +229,7 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 				&& this.nowMonth == this.currentMonth 
 				&& this.nowDay == dayNum) {
 				//フラグ変更、テキストビュースタイル変更
-				tg.setNowDay(true);
+				tg.setToDay(true);
 				((CustomCalendarView)findViewById(tg.getTextViewId())).setBackgroundResource(R.drawable.text_now_line);
 			}
 			
@@ -237,35 +237,35 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 			if (yearNum == this.currentYear && monthNum == this.currentMonth) {
 				//日曜日は赤文字
 				if(col == 0) {
-					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.RED);
+					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_day)).setTextColor(Color.RED);
 				//土曜日は青文字
 				} else if(col == 6) {
-					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.BLUE);
+					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_day)).setTextColor(Color.BLUE);
 				//その他は黒文字
 				} else {
-					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.BLACK);
+					((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_day)).setTextColor(Color.BLACK);
 				}
 			//前月・来月の月跨ぎはグレー文字					
 			} else {
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.GRAY);
+				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_day)).setTextColor(Color.GRAY);
 			}
 			
 			//休日は赤文字
 			if (holidays.containsKey(calYmd)
 				&& holidays.get(calYmd).getHoliday().equals(HOLYDAY)) {
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setTextColor(Color.RED);
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text2)).setTextColor(Color.RED);
+				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_day)).setTextColor(Color.RED);
+				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_title)).setTextColor(Color.RED);
 			}
 			
 			//テキストビューに日付を設定
 			if (dayNum != 0) { 
 				tg.setDayNum(dayNum);
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text1)).setText(tg.getDispString());
+				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_day)).setText(tg.getDispString());
 			}
 			
 			//休日のタイトルを設定
 			if (holidays.containsKey(calYmd)) {
-				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text2)).setText((holidays.get(calYmd)).getTitle());
+				((TextView)((CustomCalendarView)findViewById(tg.getTextViewId())).findViewById(R.id.text_title)).setText((holidays.get(calYmd)).getTitle());
 			}
 			
 			//次の曜日
@@ -312,22 +312,50 @@ public class MyCalendarMainActivity extends ActionBarActivity {
     }
 
     public void selectDay(View view) {
-		for(int i = 0 ; i < this.dayTextList.size(); i++) {
-			if(this.dayTextList.get(i).getTextViewId() == view.getId()) {
-				((CustomCalendarView)findViewById(this.dayTextList.get(i).getTextViewId())).setBackgroundResource(R.drawable.text_selected_line);
-				this.dayTextList.get(i).setSelected(true);
-			}
-			else {
-				if(this.dayTextList.get(i).isNowDay() == true) {
-					((CustomCalendarView)findViewById(this.dayTextList.get(i).getTextViewId())).setBackgroundResource(R.drawable.text_now_line);
-					this.dayTextList.get(i).setSelected(false);
+    	// Get Intent of DayCalendar Activity (MyCalendarDayActivity)
+    	Intent intent = new Intent(this, MyCalendarDayActivity.class);
+
+    	for(int i = 0 ; i < dayTextList.size(); i++) {
+    		// Get dayTextViewInfo
+    		DayTextViewInfo dayTextViewInfo = dayTextList.get(i);
+    		
+    		// Get customCalendarView
+    		CustomCalendarView customCalendarView = (CustomCalendarView)findViewById(dayTextViewInfo.getTextViewId());
+    		
+    		// When Selected TextView Then
+    		if(dayTextViewInfo.getTextViewId() == view.getId()) {
+    			
+    			// Change Selected TextView's Background
+    			customCalendarView.setBackgroundResource(R.drawable.text_selected_line);
+    			dayTextViewInfo.setSelected(true);
+    			
+    			// Get TextView From Selected TextView
+    	    	TextView textView = (TextView) customCalendarView.findViewById(R.id.text_day);
+
+    	    	// Get Message From EditText
+    	    	String message = textView.getText().toString();
+    	    	
+    	    	// Add Extended data to the Intent
+    	    	intent.putExtra(EXTRA_MESSAGE, message);
+			
+    		// Else Other return to origin
+    		} else {
+    			
+    			// When today TextView Then
+    			if(dayTextViewInfo.isToDay() == true) {
+    				customCalendarView.setBackgroundResource(R.drawable.text_now_line);
+    				dayTextViewInfo.setSelected(false);
+			
+				// Else then
+	    		} else {
+					customCalendarView.setBackgroundResource(R.drawable.text_day_line);
+					dayTextViewInfo.setSelected(false);
 				}
-				else if(this.dayTextList.get(i).isSelected()) {
-					((CustomCalendarView)findViewById(this.dayTextList.get(i).getTextViewId())).setBackgroundResource(R.drawable.text_day_line);
-					this.dayTextList.get(i).setSelected(false);
-				}
-			}
+    		}
 		}
+		
+    	// Start Next Activity (DisplayMessageActivity)
+    	startActivity(intent);
 	}
 	
 	public void goPreviousMonth(View view) {
