@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,8 +16,9 @@ import android.widget.TextView;
 
 public class MyCalendarMainActivity extends ActionBarActivity {
 
+	public final static String EXTRA_MESSAGE = "com.sample.myCalendar.MESSAGE";
+
 	private static final String HOLYDAY = "1";			// 1:休日
-	
 	private TextView headerMonthText = null;			// 年月表示テキストビュー
 	
 	private Calendar cal;								// カレンダー
@@ -151,6 +153,15 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 	 */
 	private void setCalendar(int offset) {
 		
+		String ymd = "";			// 年月日
+		int year = 0;				// 年
+		int month = 0;				// 月
+		int date = 0;				// 日
+		int col = 0;				// 曜日
+		
+		// 日付フォーマッター取得
+		SimpleDateFormat formYmd = new SimpleDateFormat("yyyyMMdd");
+		
 	    // 表示月を計算
 		currentMonth += offset;
 		
@@ -169,36 +180,30 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 		currentYear = cal.get(Calendar.YEAR);				// 表示年
 	    currentMonth = cal.get(Calendar.MONTH) + 1;			// 表示月
 	    currentDate = cal.get(Calendar.DATE);				// 表示日
-	    
+
+	    // 休日検索
+ 		CalendarDao dao  = new CalendarDao(this);
+ 		
+ 		String[] condition = new String[] {
+ 			String.valueOf(currentYear), 
+ 			String.valueOf(currentMonth), 
+ 			getString(R.string.country)
+ 		};
+ 		
+ 		Map<String, CalendarForm> holidays = dao.getHoliDay(condition);
+ 		
 		// カレンダーの開始曜日を取得
 		int dayOffset = 0;
 		
 	    // 月の初日の曜日を取得
 		int startDay = cal.get(Calendar.DAY_OF_WEEK);
-		
+	    
 		// カレンダーの表示開始日を設定
-		startDay = (startDay + dayOffset - 1) % 7;
-		cal.add(Calendar.DATE, - startDay);
-		
-		// 休日検索
-		CalendarDao dao  = new CalendarDao(this);
-		
-		String[] condition = new String[] {
-			String.valueOf(currentYear), 
-			String.valueOf(currentMonth), 
-			getString(R.string.country)
-		};
-		
-		Map<String, CalendarForm> holidays = dao.getHoliDay(condition);
-		
-		String ymd = "";		// 年月日
-		int year = 0;			// 年
-		int month = 0;			// 月
-		int date = 0;			// 日
-		int col = 0;			// 曜日
-		
-		// 日付フォーマッター取得
-		SimpleDateFormat formYmd = new SimpleDateFormat("yyyy/MM/dd");
+		if (startDay + dayOffset == 1) {
+			cal.add(Calendar.DATE, - ((startDay + dayOffset) + 6));
+		} else {
+			cal.add(Calendar.DATE, - ((startDay + dayOffset) - 1 % 7));
+		}
 		
 		for (int i = 0 ; i < this.dayTextList.size(); i++) {
 			
@@ -207,8 +212,8 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 			CustomCalendarView ccv = (CustomCalendarView)findViewById(vi.getTextViewId());
 			
 			// textview取得
-			TextView text1 = (TextView)ccv.findViewById(R.id.text1);
-			TextView text2 = (TextView)ccv.findViewById(R.id.text2);
+			TextView textDay = (TextView)ccv.findViewById(R.id.text_day);
+			TextView textTitle = (TextView)ccv.findViewById(R.id.text_title);
 			
 			// 表示年月日取得
 			ymd = formYmd.format(cal.getTime());
@@ -218,16 +223,19 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 			
 			// 日付ビュー初期化
 			ccv.setBackgroundResource(R.drawable.text_day_line);
-			vi.setNowDay(false);
+			vi.setToDay(false);
 			vi.setSelected(false);
-			text1.setText(String.valueOf(date));
+			textDay.setTextColor(Color.BLACK);
+			textDay.setText(String.valueOf(date));
+			textTitle.setTextColor(Color.BLACK);
+			textTitle.setText("");
 			
 			// 表示年月日 = 現在年月日
 			if (year == nowYear && month == nowMonth && date == nowDate) {
 				
 				// フラグ変更、テキストビュースタイル変更
 				ccv.setBackgroundResource(R.drawable.text_now_line);
-				vi.setNowDay(true);
+				vi.setToDay(true);
 			}
 			
 			// 現在年月の場合
@@ -235,20 +243,20 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 				
 				// 日曜日は赤文字
 				if (col == ((0 + dayOffset) % 7)) {
-					text1.setTextColor(Color.RED);
+					textDay.setTextColor(Color.RED);
 				
 				// 土曜日は青文字
 				} else if (col == ((6 + dayOffset) % 7)) {
-					text1.setTextColor(Color.BLUE);
+					textDay.setTextColor(Color.BLUE);
 				
 				// その他は黒文字
 				} else {
-					text1.setTextColor(Color.BLACK);
+					textDay.setTextColor(Color.BLACK);
 				}
 			
 			// 前月・来月の月跨ぎはグレー文字					
 			} else {
-				text1.setTextColor(Color.GRAY);
+				textDay.setTextColor(Color.GRAY);
 			}
 			
 			// 休日は赤文字
@@ -256,20 +264,15 @@ public class MyCalendarMainActivity extends ActionBarActivity {
 				&& holidays.get(ymd).getHoliday().equals(HOLYDAY)) {
 				
 				// 休日は赤文字
-				text1.setTextColor(Color.RED);
-				text2.setTextColor(Color.RED);
+				textDay.setTextColor(Color.RED);
+				textTitle.setTextColor(Color.RED);
 				
 				// 休日のタイトルを設定
-				text2.setText((holidays.get(ymd)).getTitle());
+				textTitle.setText((holidays.get(ymd)).getTitle());
 			}
 			
 			// 次の曜日
-			col += 1;
-			
-			// 次の週、日曜日からスタート
-			if (col == 7) {
-				col = 0;
-			}
+			col = ((col + dayOffset) + 1) % 7;
 			
 			// 次の日
 			cal.add(Calendar.DATE, 1);
@@ -307,22 +310,51 @@ public class MyCalendarMainActivity extends ActionBarActivity {
     }
     
     public void selectDay(View view) {
-		for (int i = 0 ; i < dayTextList.size(); i++) {
-			CustomCalendarView ccv = (CustomCalendarView)findViewById(dayTextList.get(i).getTextViewId());
-			if (dayTextList.get(i).getTextViewId() == view.getId()) {
-				ccv.setBackgroundResource(R.drawable.text_selected_line);
-				dayTextList.get(i).setSelected(true);
-			} else {
-				if (dayTextList.get(i).isNowDay() == true) {
-					ccv.setBackgroundResource(R.drawable.text_now_line);
-					dayTextList.get(i).setSelected(false);
-				}
-				else if (dayTextList.get(i).isSelected()) {
+
+    	// Get Intent of DayCalendar Activity (MyCalendarDayActivity)
+    	Intent intent = new Intent(this, MyCalendarDayActivity.class);
+
+    	for(int i = 0 ; i < dayTextList.size(); i++) {
+    		// Get dayTextViewInfo
+    		DayTextViewInfo dayTextViewInfo = dayTextList.get(i);
+    		
+    		// Get customCalendarView
+    		CustomCalendarView ccv = (CustomCalendarView)findViewById(dayTextViewInfo.getTextViewId());
+    		
+    		// When Selected TextView Then
+    		if(dayTextViewInfo.getTextViewId() == view.getId()) {
+    			
+    			// Change Selected TextView's Background
+    			ccv.setBackgroundResource(R.drawable.text_selected_line);
+    			dayTextViewInfo.setSelected(true);
+    			
+    			// Get TextView From Selected TextView
+    	    	TextView textView = (TextView) ccv.findViewById(R.id.text_day);
+
+    	    	// Get Message From EditText
+    	    	String message = textView.getText().toString();
+    	    	
+    	    	// Add Extended data to the Intent
+    	    	intent.putExtra(EXTRA_MESSAGE, message);
+			
+    		// Else Other return to origin
+    		} else {
+    			
+    			// When today TextView Then
+    			if(dayTextViewInfo.isToDay() == true) {
+    				ccv.setBackgroundResource(R.drawable.text_now_line);
+    				dayTextViewInfo.setSelected(false);
+			
+				// Else then
+	    		} else {
 					ccv.setBackgroundResource(R.drawable.text_day_line);
-					dayTextList.get(i).setSelected(false);
-				}
-			}
+					dayTextViewInfo.setSelected(false);
+	    		}
+    		}
 		}
+		
+    	// Start Next Activity (DisplayMessageActivity)
+    	startActivity(intent);
 	}
 	
 	public void goPreviousMonth(View view) {

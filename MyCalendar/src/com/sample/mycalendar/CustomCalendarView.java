@@ -46,10 +46,10 @@ public class CustomCalendarView extends LinearLayout {
 		typedArray.recycle();
 		
 		//カスタムビュー項目に初期値を設定
-		TextView textView1 = (TextView) findViewById(R.id.text1);
+		TextView textView1 = (TextView) findViewById(R.id.text_day);
 		textView1.setText(dayText);
 		
-		TextView textView2 = (TextView) findViewById(R.id.text2);
+		TextView textView2 = (TextView) findViewById(R.id.text_title);
 		textView2.setText(titleText);
 		
 	}

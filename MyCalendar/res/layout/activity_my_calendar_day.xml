@@ -60,7 +60,7 @@
 			android:orientation="horizontal"
 			android:padding="5dp" >
 			<Button
-				android:id="@+id/previous_month_button"
+				android:id="@+id/month_calendar_button"
 				style="android:attr/buttonStyleSmall"
 				android:layout_marginLeft="2dp"
 				android:layout_marginRight="2dp"
@@ -71,7 +71,7 @@
 				android:background="@drawable/custom_button_prev"
 				android:onClick="goMonthCalendar" />
 			<Button
-				android:id="@+id/current_month_button"
+				android:id="@+id/edit_button"
 				style="android:attr/buttonStyleSmall"
 				android:layout_marginLeft="2dp"
 				android:layout_marginRight="2dp"
